@@ -1,16 +1,5 @@
-# ── Backend ────────────────────────────────
 fastapi==0.111.0
 uvicorn[standard]==0.29.0
-
-# ── Base de données ─────────────────────────
 pymongo==4.7.2
 python-dotenv==1.0.1
-
-# ── Collecte de données ─────────────────────
-biopython==1.83
-requests==2.31.0
-pandas==2.2.2
-
-# ── Frontend / Dashboard ────────────────────
-streamlit==1.35.0
-plotly==5.22.0
+dnspython==2.6.1
