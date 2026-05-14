@@ -71,7 +71,7 @@ def mock_health(): return True, MOCK_HEALTH
 
 # ─── BACKEND API — connecté à FastAPI ─────────────────────────────────────────
 import requests
-API_BASE = "http://localhost:8000"
+API_BASE = "https://eidm-project6-54pd.onrender.com"
 
 @st.cache_data(ttl=60)
 def api_articles(domain=None, search=None, year_from=None, year_to=None, page=1, limit=100):
