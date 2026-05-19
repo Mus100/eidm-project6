@@ -567,7 +567,21 @@ elif PAGE == "Publications":
                        else view_df[view_df["domain"] == _view_domains[i-1]].sort_values("year", ascending=False))
                 st.markdown(f'<div style="font-size:11px;color:{T["t3"]};margin-bottom:12px">{len(sub):,} article(s)</div>', unsafe_allow_html=True)
                 for _, row in sub.head(50).iterrows():
-                    render_article(row, clamp=3)
+                    title  = str(row.get("title","") or "Untitled")
+                    yr     = int(row["year"]) if pd.notna(row.get("year")) else ""
+                    domain = str(row.get("domain","") or "")
+                    label  = f"[{domain}]  {title[:80]}{'...' if len(title)>80 else ''}  ({yr})"
+                    with st.expander(label):
+                        render_article(row, clamp=20)
+                        pmid = str(row.get("pmid","") or "")
+                        doi  = str(row.get("doi","") or "")
+                        c1, c2, _ = st.columns([1,1,3])
+                        if pmid and pmid.isdigit():
+                            with c1:
+                                st.link_button("🔗 Voir sur PubMed", f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/")
+                        if doi and doi.startswith("10."):
+                            with c2:
+                                st.link_button("📄 Voir DOI", f"https://doi.org/{doi}")
 
 # ══════════════════════════════════════════════════════════════════════════════
 # PAGE : TABLE
