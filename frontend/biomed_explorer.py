@@ -423,15 +423,29 @@ elif PAGE == "Search":
         col_s, asc_s = {"Année (desc)":("year",False),"Année (asc)":("year",True),"Titre A-Z":("title",True),"Journal":("journal",True)}[sort_by]
         results = results.sort_values(col_s, ascending=asc_s)
 
-    st.markdown(f'<div style="font-size:11px;color:{T["t3"]};margin-bottom:14px">{len(results):,} résultat(s) — page {cur_page}</div>', unsafe_allow_html=True)
-    if results.empty:
-        st.info("Aucun résultat.")
+    # Masquer les résultats tant qu'aucune recherche n'est lancée
+    if not st.session_state.search_query and f_domain == "All" and f_journal == "All":
+        st.markdown(f'<div style="text-align:center;padding:60px 0;color:{T["t3"]};font-size:14px">🔍 Entrez un mot-clé et cliquez sur Rechercher</div>', unsafe_allow_html=True)
+    elif results.empty:
+        st.info("Aucun résultat pour cette recherche.")
     else:
+        st.markdown(f'<div style="font-size:11px;color:{T["t3"]};margin-bottom:14px">{len(results):,} résultat(s) — page {cur_page}</div>', unsafe_allow_html=True)
         for _, row in results.iterrows():
-            title = str(row.get("title","") or "Untitled")
-            yr    = int(row["year"]) if pd.notna(row.get("year")) else ""
-            with st.expander(f"{title[:95]}{'...' if len(title)>95 else ''}  [{yr}]"):
+            title  = str(row.get("title","") or "Untitled")
+            yr     = int(row["year"]) if pd.notna(row.get("year")) else ""
+            domain = str(row.get("domain","") or "")
+            label  = f"[{domain}]  {title[:80]}{'...' if len(title)>80 else ''}  ({yr})"
+            with st.expander(label):
                 render_article(row, clamp=20)
+                pmid = str(row.get("pmid","") or "")
+                doi  = str(row.get("doi","") or "")
+                c1, c2, _ = st.columns([1,1,3])
+                if pmid and pmid.isdigit():
+                    with c1:
+                        st.link_button("🔗 Voir sur PubMed", f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/")
+                if doi and doi.startswith("10."):
+                    with c2:
+                        st.link_button("📄 Voir DOI", f"https://doi.org/{doi}")
 
 # ══════════════════════════════════════════════════════════════════════════════
 # PAGE : ANALYTICS
